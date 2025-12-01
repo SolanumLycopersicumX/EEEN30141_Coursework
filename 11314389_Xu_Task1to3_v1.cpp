@@ -135,7 +135,7 @@ int main()
             // thd_runner_16x100m(std::ref(athlete[i][j]), std::ref(randGen_sprint_time));
             // THIS IS FOR PART 1  //Part 1.8 Remove the sequential call line above, with the multithreaded one below
             // thread_competitor[i][j] = std::thread(thd_runner_16x100m, ....
-            thread_competitor[i][j] = std::thread(thd_runner_16x100m, std::ref(athlete[i][j]), std::ref(randGen_sprint_time)); // Run the atheletes all together (16x100m)
+            thread_competitor[i][j] = std::thread(thd_runner_16x100m, std::ref(athlete[i][j]), std::ref(randGen_sprint_time)); // Run the atheletes all together (16x100m), ref is used to pass by reference, if not the thread makes a copy of the object, and the object in the main thread is not updated.
 
             // THIS IS FOR PART 2
             // Part 2.7 Start the thd_runner_4x4x100m instead. If it is the first runner of the team (j==0) then Competitor *pPrevA should be NULL, otherwide it should be the previous runner (Competitor *)&(athlete[i][j-1])
@@ -158,6 +158,7 @@ int main()
     //  Wait at the barrier until all threads arrive
     thrd_print("\nGO !\n\n");
     // Join all threads
+    
     for (int i = 0; i < NUM_TEAMS; ++i)
     {
         for (int j = 0; j < NUM_MEMBERS; ++j)

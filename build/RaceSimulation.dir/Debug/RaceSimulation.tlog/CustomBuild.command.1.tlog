@@ -1,0 +1,10 @@
+^F:\MEGA\UNIVERSITY OF MANCHESTER\3\30141 - CONCURRENT SYSTEMS\LAB\COURSEWORK\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SF:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework" "-BF:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework/build" --check-stamp-file "F:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework/build/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -98,12 +98,14 @@ void thd_runner_4x4x100m(Competitor &a, Competitor *pPrevA, RandomTwister &gener
         { // Brackets to reduce mutex scope
           // Part 2.3 Create a std::unique_lock<std::mutex> called "lock", initialised with pPrevA->mtx mutex
           // Part 2.3: 创建锁，锁住上一棒的互斥量
-          std::unique_lock<std::mutex> lock(pPrevA->mtx);
+          std::unique_lock<std::mutex> lock(pPrevA->mtx);//unique_lock：condition_variable::wait()函数要求必须传入 unique_lock
           // Part 2.4 Complete the pPrevA->baton condition_variable line below to wait on that lock. (use the pPrevA->bFinished as the check function. It is tricky to get the lambda right!)
           // pPrevA->baton.wait(lock, ... Complete this bit ... }); // Wait for the baton to arrive.
           // Part 2.4: 等待接力棒 (Condition Variable)
           // 解释: wait 会让线程休眠。当 pPrevA 完成并 notify 时，或者 bFinished 变 true 时，线程唤醒。
           pPrevA->baton.wait(lock, [&] { return pPrevA->bFinished; });
+          //线程在这里暂停，释放锁，进入阻塞状态，等待上一棒发出信号。即使没有收到信号，操作系统有时也会莫名其妙唤醒线程。如果没有这个 bFinished 检查，线程可能还没接到棒就跑了。
+          //wait 被唤醒时，会重新加锁，然后检查 bFinished。如果 bFinished 是 true（上一棒跑完了），就继续执行；如果是 false（可能被误唤醒），就释放锁继续睡。
         }
         thrd_print(a.getPerson() + " (" + a.getTeamName() + ")" + " took the baton from " + pPrevA->getPerson() + " (" + pPrevA->getTeamName() + ")\n");
     }
@@ -120,7 +122,7 @@ void thd_runner_4x4x100m(Competitor &a, Competitor *pPrevA, RandomTwister &gener
         // Print "finished" only if this is the first thread to complete
         // Part 2.6 Use an atomic .exchange on the atomic "winner" object that you defined at the top of this code and use this in the line below
         // Part 2.6: 只有第一个将 winner 从 false 改为 true 的线程才是赢家
-        if (!winner.exchange(true)) // Uncomment this line
+        if (!winner.exchange(true)) // exchange是原子操作，返回旧值并设置新值，返回false表示之前没有赢家，并将true写入winner，让第二个到达的线程返回true，第二个线程就会跳过打印
         {
             std::cout << "\n Team " << a.getTeamName() << " is the WINNER!" << std::endl;
         }

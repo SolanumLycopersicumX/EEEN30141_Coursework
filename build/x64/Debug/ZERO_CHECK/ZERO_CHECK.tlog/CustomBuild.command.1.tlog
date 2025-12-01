@@ -1,0 +1,10 @@
+^F:\MEGA\UNIVERSITY OF MANCHESTER\3\30141 - CONCURRENT SYSTEMS\LAB\COURSEWORK\BUILD\CMAKEFILES\9FF410321A660AAE15D6FF6F711F6F3E\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SF:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework" "-BF:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "F:/MEGA/University of Manchester/3/30141 - Concurrent Systems/LAB/Coursework/build/ConcurrentSystems_Task1to3.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

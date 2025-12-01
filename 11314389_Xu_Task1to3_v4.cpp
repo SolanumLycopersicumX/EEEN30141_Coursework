@@ -17,7 +17,7 @@
 // --- Task 4: Winsock Headers (No Asio) ---
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "ws2_32.lib")//把windows的ws2_32.lib库文件链接到链接器输入库列表中
 // -----------------------------------------
 
 using namespace std;
@@ -32,9 +32,9 @@ std::array<std::array<std::string, 4>, 4> aastrCompetitors = {{{"Williams", "Tho
                                                                {"Del-Ponte", "Kambundji", "Kora", "Dietsche"}}};
 
 // --- Task 4 UDP Globals ---
-SOCKET g_SendSocket = INVALID_SOCKET;
-sockaddr_in g_RecvAddr;
-bool g_WSAInitialized = false;
+SOCKET g_SendSocket = INVALID_SOCKET;//g_SendSocket用于发送数据
+sockaddr_in g_RecvAddr;//g_RecvAddr用于储存接收端地址信息（IP和端口）
+bool g_WSAInitialized = false;//标记Winsock是否初始化成功
 
 class RandomTwister
 {
@@ -44,7 +44,7 @@ public:
     {
         std::lock_guard<std::mutex> lock(mtx);
         return distribution(engine);
-    }
+   }
 
 private:
     std::mutex mtx;
@@ -58,14 +58,14 @@ void thrd_print(const std::string &str)
     static std::mutex print_mtx;
     std::lock_guard<std::mutex> lock(print_mtx);
 
-    // 1. 本地打印
+    // 1. 本地控制台打印
     cout << str;
 
-    // 2. Task 4: UDP 发送 (Winsock)
+    // 2. Task 4: UDP 发送 (Winsock)，但UDP只发送不管道接收端是否接收成功
     // 只有通过 thrd_print 打印的内容，才会被发送到接收端
     if (g_SendSocket != INVALID_SOCKET)
     {
-        sendto(g_SendSocket, str.c_str(), str.length(), 0, (SOCKADDR *)&g_RecvAddr, sizeof(g_RecvAddr));
+        sendto(g_SendSocket, str.c_str(), str.length(), 0, (SOCKADDR *)&g_RecvAddr, sizeof(g_RecvAddr));//sendto也受mutex保护，g_SendSocket和g_RecvAddr是全局变量
     }
 }
 
@@ -144,13 +144,15 @@ int main()
 {
     // --- Task 4 Initialization (Winsock) ---
     WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) == 0)
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) == 0)// 1. 启动 Winsock
     {
         g_WSAInitialized = true;
-        g_SendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        g_RecvAddr.sin_family = AF_INET;
-        g_RecvAddr.sin_port = htons(6000);
-        g_RecvAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+        // 2. 创建 Socket (UDP)
+        g_SendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);//sock_dgram 表示 UDP,如果是 TCP 则是 sock_stream
+        // 3. 设置目标地址
+        g_RecvAddr.sin_family = AF_INET;// IPv4
+        g_RecvAddr.sin_port = htons(6000);// htons:host to network short, 端口 6000,htons用于将主机字节序little endian转换为网络字节序big endian
+        g_RecvAddr.sin_addr.s_addr = inet_addr("127.0.0.1");// 本机地址
     }
     // ---------------------------------------
 

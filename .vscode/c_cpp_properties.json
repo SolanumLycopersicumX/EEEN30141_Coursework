@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "name": "Win32-Clang",
+            "compilerPath": "C:/msys64/ucrt64/bin/clang++.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "windows-clang-x64",
+            "includePath": [
+                "${workspaceFolder}",
+                "${workspaceFolder}/Franks_websocket",
+                "${workspaceFolder}/Franks_websocket/asio",
+                "${workspaceFolder}/Franks_websocket/websocketpp"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "${workspaceFolder}/Franks_websocket"
+                ]
+            },
+            "defines": [
+                "_WEBSOCKETPP_CPP11_THREAD_",
+                "_WEBSOCKETPP_NO_BOOST_",
+                "ASIO_STANDALONE",
+                "_WIN32_WINNT=0x0601"
+            ]
+        }
+    ],
+    "version": 4
+}
